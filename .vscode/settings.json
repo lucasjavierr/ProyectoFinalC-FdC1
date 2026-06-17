@@ -1,0 +1,22 @@
+{
+    "code-runner.executorMap": {
+        "c": "cd $dir && (for /f \"delims=\" %i in ('dir /b *.c') do @echo %i) > files.txt && g++ @files.txt -o $fileNameWithoutExt.exe -Wall -lwinmm && del files.txt && start cmd /k \"$fileNameWithoutExt.exe && echo. && echo Program finished. && echo Presione una tecla para finalizar la visualizacion. && pause >nul && exit\"",
+        "cpp": "cd $dir && (for /f \"delims=\" %i in ('dir /b *.cpp') do @echo %i) > files.txt && g++ @files.txt -o $fileNameWithoutExt.exe -Wall -lwinmm && del files.txt && start cmd /k \"$fileNameWithoutExt.exe && echo. && echo Program finished. && echo Presione una tecla para finalizar la visualizacion. && pause >nul && exit\""
+    },
+    "code-runner.runInTerminal": true,
+    "code-runner.saveFileBeforeRun": true,
+    "code-runner.clearPreviousOutput": true,
+    
+    "terminal.integrated.defaultProfile.windows": "Command Prompt",
+    "terminal.integrated.automationProfile.windows": {
+        "path": "C:\\Windows\\System32\\cmd.exe"
+    },
+    
+    "errorLens.enabled": true,
+    "errorLens.showWarnings": true,
+    "errorLens.showErrors": true,
+    "errorLens.showInfo": true,
+    "files.associations": {
+        "iostream": "cpp"
+    }
+}
