@@ -17,7 +17,7 @@ int mapa[FILAS][COLS] = {
     {2, 0, 2, 0, 2, 0, 0, 0, 2, 0, 2, 0, 0, 0, 2, 0, 2, 0, 2},
     {2, 0, 2, 0, 2, 2, 2, 0, 2, 0, 2, 0, 2, 2, 2, 0, 2, 0, 2},
     {2, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 2},
-    {2, 0, 3, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2, 3, 0, 2},
+    {2, 0, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 0, 2},
     {2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2},
     {2, 2, 2, 0, 2, 0, 2, 2, 2, 0, 2, 2, 2, 0, 2, 0, 2, 2, 2},
     {0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0},
@@ -33,7 +33,7 @@ void imprimirMapa(Pacman *pacman, Fantasma fantasmas[], int n) {
                 case PARED: snprintf(mapaVisual[i][j], 10, "██"); break;
                 case CAMINO: snprintf(mapaVisual[i][j], 10, "  "); break;
                 case PUNTO: snprintf(mapaVisual[i][j], 10, " ·"); break;
-                case FANTASMA: snprintf(mapaVisual[i][j], 10, " ●"); break;
+                case POWER: snprintf(mapaVisual[i][j], 10, " ●"); break;
                 default: snprintf(mapaVisual[i][j], 10, "  "); break;
             }
         }

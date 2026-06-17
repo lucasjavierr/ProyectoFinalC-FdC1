@@ -3,6 +3,7 @@
 #include <string.h>
 #include "personajes.h"
 #include "mapa.h"
+#include "grafo.h"
 
 void iniciarPacman(Pacman *pacman, int fila, int col) {
     pacman->fila = fila;
@@ -47,10 +48,6 @@ void moverPacman(Pacman *pacman, Direccion dir) {
     if (mapa[nuevaFila][nuevaCol] == PUNTO) {
         mapa[nuevaFila][nuevaCol] = CAMINO;
         pacman->puntaje += 10;
-    }
-    else if (mapa[nuevaFila][nuevaCol] == FANTASMA) {
-        mapa[nuevaFila][nuevaCol] = CAMINO;
-        pacman->puntaje += 50;
     }
 }
 

@@ -9,7 +9,7 @@
 #define PARED 0
 #define CAMINO 1
 #define PUNTO 2
-#define FANTASMA 3
+#define POWER 3
 
 extern int mapa[FILAS][COLS];
 
