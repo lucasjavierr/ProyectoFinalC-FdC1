@@ -6,6 +6,7 @@
 #include "mapa.h"
 #include "grafo.h"
 #include "personajes.h"
+#include "menu.h"
 
 #define NUM_FANTASMAS 4
 #define DURACION_ASUSTADO 15 
@@ -24,7 +25,78 @@ void ocultarCursor() {
     SetConsoleCursorInfo(consoleHandle, &info);
 }
 
-int main() {
+void mostrarHighscore() {
+    system("cls");
+    printf("\n\n");
+    printf("  ╔══════════════════════════════╗\n");
+    printf("  ║        MEJORES PUNTAJES      ║\n");
+    printf("  ╠══════════════════════════════╣\n");
+
+    FILE *f = fopen("highscore.txt", "r");
+    if (f == NULL) {
+        printf("  ║   Todavia no hay puntajes.   ║\n");
+    } else {
+        char nombre[32];
+        int puntaje;
+        int posicion = 1;
+        while (fscanf(f, "%31s %d", nombre, &puntaje) == 2 && posicion <= 5) {
+            printf("  ║  %d. %-15s  %6d pts  ║\n", posicion, nombre, puntaje);
+            posicion++;
+        }
+        fclose(f);
+    }
+
+    printf("  ╚══════════════════════════════╝\n");
+    printf("\n  Presiona cualquier tecla para volver...\n");
+    _getch();
+}
+
+void mostrarInstrucciones() {
+    system("cls");
+    printf("\n\n");
+    printf("  ╔══════════════════════════════════════╗\n");
+    printf("  ║             INSTRUCCIONES            ║\n");
+    printf("  ╠══════════════════════════════════════╣\n");
+    printf("  ║                                      ║\n");
+    printf("  ║  W / A / S / D  →  Mover a Pac-Man  ║\n");
+    printf("  ║  Q              →  Salir del juego   ║\n");
+    printf("  ║                                      ║\n");
+    printf("  ║  Come los puntos (·) para puntaje.   ║\n");
+    printf("  ║  Come los power-ups (●) para asustar ║\n");
+    printf("  ║  a los fantasmas y comerlos.          ║\n");
+    printf("  ║                                      ║\n");
+    printf("  ║  Tenes 3 vidas. ¡No te atrapen!      ║\n");
+    printf("  ║                                      ║\n");
+    printf("  ╚══════════════════════════════════════╝\n");
+    printf("\n  Presiona cualquier tecla para volver...\n");
+    _getch();
+}
+
+void mostrarPartidasGuardadas() {
+    system("cls");
+    printf("\n\n");
+    printf("  ╔══════════════════════════════════╗\n");
+    printf("  ║        PARTIDAS GUARDADAS        ║\n");
+    printf("  ╠══════════════════════════════════╣\n");
+    printf("  ║                                  ║\n");
+    printf("  ║  Funcion no implementada aun.    ║\n");
+    printf("  ║  Proximamente podras guardar     ║\n");
+    printf("  ║  y continuar tus partidas.       ║\n");
+    printf("  ║                                  ║\n");
+    printf("  ╚══════════════════════════════════╝\n");
+    printf("\n  Presiona cualquier tecla para volver...\n");
+    _getch();
+}
+
+void guardarPuntaje(int puntaje) {
+    FILE *f = fopen("highscore.txt", "a");
+    if (f != NULL) {
+        fprintf(f, "Jugador %d\n", puntaje);
+        fclose(f);
+    }
+}
+
+void jugar() {
     srand(time(NULL));
     SetConsoleOutputCP(65001);
     system("cls"); 
@@ -178,5 +250,36 @@ int main() {
     }
     printf("   Puntaje Final: %d\n\n", pacman.puntaje);
     liberarGrafo(&grafo);
+}
+
+int main() {
+    srand(time(NULL));
+
+    int enEjecucion = 1;
+    while (enEjecucion) {
+        OpcionMenu opcion = mostrarMenu();
+
+        switch (opcion) {
+            case OPCION_JUGAR:
+                jugar();
+                break;
+            case OPCION_PARTIDAS_GUARDADAS:
+                mostrarPartidasGuardadas();
+                break;
+            case OPCION_HIGHSCORE:
+                mostrarHighscore();
+                break;
+            case OPCION_INSTRUCCIONES:
+                mostrarInstrucciones();
+                break;
+            case OPCION_SALIR:
+                enEjecucion = 0;
+                break;
+            default:
+                break;
+        }
+    }
+    system("cls");
+    printf("\n  ¡Hasta luego!\n\n");
     return 0;
 }
