@@ -9,8 +9,25 @@
 #include "menu.h"
 
 #define NUM_FANTASMAS 4
-#define DURACION_ASUSTADO 15 
-#define VELOCIDAD_FANTASMAS 2
+#define DURACION_ASUSTADO 15
+
+/* Configuración por nivel:
+    Nivel 1 (Fácil)   — Sleep 160ms, fantasmas cada 3 turnos, bonus x1
+    Nivel 2 (Normal)  — Sleep 100ms, fantasmas cada 2 turnos, bonus x1.5
+    Nivel 3 (Difícil) — Sleep  60ms, fantasmas cada 1 turno,  bonus x2 
+*/
+typedef struct {
+    int sleepMs;
+    int velocidadFantasmas;
+    float multiplicadorBonus;
+    const char *nombre;
+} ConfigNivel;
+
+static const ConfigNivel NIVELES[3] = {
+    { 500, 3, 1.0f,  "FACIL"   },
+    { 350, 2, 1.5f,  "NORMAL"  },
+    { 200, 1, 2.0f,  "DIFICIL" },
+};
 
 void limpiarPantalla() {
     COORD coord = {0, 0};
@@ -40,7 +57,7 @@ void mostrarHighscore() {
         int puntaje;
         int posicion = 1;
         while (fscanf(f, "%31s %d", nombre, &puntaje) == 2 && posicion <= 5) {
-            printf("  ║  %d. %-15s  %6d pts  ║\n", posicion, nombre, puntaje);
+            printf("  ║  %d. %-10s  %6d pts   ║\n", posicion, nombre, puntaje);
             posicion++;
         }
         fclose(f);
@@ -58,45 +75,77 @@ void mostrarInstrucciones() {
     printf("  ║             INSTRUCCIONES            ║\n");
     printf("  ╠══════════════════════════════════════╣\n");
     printf("  ║                                      ║\n");
-    printf("  ║  W / A / S / D  →  Mover a Pac-Man  ║\n");
+    printf("  ║  W / A / S / D  →  Mover a Pac-Man   ║\n");
     printf("  ║  Q              →  Salir del juego   ║\n");
     printf("  ║                                      ║\n");
     printf("  ║  Come los puntos (·) para puntaje.   ║\n");
     printf("  ║  Come los power-ups (●) para asustar ║\n");
-    printf("  ║  a los fantasmas y comerlos.          ║\n");
+    printf("  ║  a los fantasmas y comerlos.         ║\n");
     printf("  ║                                      ║\n");
-    printf("  ║  Tenes 3 vidas. ¡No te atrapen!      ║\n");
+    printf("  ║  Tenes 3 vidas. ¡Que no te atrapen!  ║\n");
     printf("  ║                                      ║\n");
     printf("  ╚══════════════════════════════════════╝\n");
     printf("\n  Presiona cualquier tecla para volver...\n");
     _getch();
 }
 
-void mostrarPartidasGuardadas() {
+int contarMonedas() {
+    int total = 0;
+    for (int i = 0; i < FILAS; i++)
+        for (int j = 0; j < COLS; j++)
+            if (mapa[i][j] == PUNTO || mapa[i][j] == POWER)
+                total++;
+    return total;
+}
+
+void mostrarVictoria(int puntaje, int segundos, const char *nivel) {
     system("cls");
     printf("\n\n");
-    printf("  ╔══════════════════════════════════╗\n");
-    printf("  ║        PARTIDAS GUARDADAS        ║\n");
-    printf("  ╠══════════════════════════════════╣\n");
-    printf("  ║                                  ║\n");
-    printf("  ║  Funcion no implementada aun.    ║\n");
-    printf("  ║  Proximamente podras guardar     ║\n");
-    printf("  ║  y continuar tus partidas.       ║\n");
-    printf("  ║                                  ║\n");
-    printf("  ╚══════════════════════════════════╝\n");
-    printf("\n  Presiona cualquier tecla para volver...\n");
+    printf("  ╔══════════════════════════════════════╗\n");
+    printf("  ║          ¡¡ GANASTE !!               ║\n");
+    printf("  ╠══════════════════════════════════════╣\n");
+    printf("  ║                                      ║\n");
+    printf("  ║  Dificultad: %-8s               ║\n", nivel);
+    printf("  ║  Tiempo:     %3d segundos            ║\n", segundos);
+    printf("  ║  Puntaje:    %6d pts             ║\n", puntaje);
+    printf("  ║                                      ║\n");
+    printf("  ╚══════════════════════════════════════╝\n\n");
+
+    printf("  Ingresa tu nombre (max 20 caracteres): ");
+    char nombre[21];
+    while (_kbhit()) _getch();
+    fgets(nombre, sizeof(nombre), stdin);
+    nombre[strcspn(nombre, "\n")] = '\0';
+    while (strlen(nombre) == 0) {
+        printf("  El nombre no puede estar vacío. Intenta de nuevo: ");
+        fgets(nombre, sizeof(nombre), stdin);
+        nombre[strcspn(nombre, "\n")] = '\0';
+    }
+
+    FILE *f = fopen("highscore.txt", "a");
+    if (f != NULL) {
+        fprintf(f, "%-20s %d\n", nombre, puntaje);
+        fclose(f);
+        printf("\n  ¡Puntaje guardado! Bien jugado, %s.\n\n", nombre);
+    } else {
+        printf("\n  No se pudo guardar el puntaje.\n\n");
+    }
+
+    printf("  Presiona cualquier tecla para continuar...\n");
     _getch();
 }
 
-void guardarPuntaje(int puntaje) {
-    FILE *f = fopen("highscore.txt", "a");
-    if (f != NULL) {
-        fprintf(f, "Jugador %d\n", puntaje);
-        fclose(f);
-    }
+int calcularBonusTiempo(int segundos) {
+    int base = 180;
+    if (segundos >= base) return 0;
+    return (base - segundos) * 10;
 }
 
-void jugar() {
+void jugar(int nivel) {
+    if (nivel < 1) nivel = 1;
+    if (nivel > 3) nivel = 3;
+    ConfigNivel cfg = NIVELES[nivel - 1];
+
     srand(time(NULL));
     SetConsoleOutputCP(65001);
     system("cls"); 
@@ -104,6 +153,7 @@ void jugar() {
 
     Pacman pacman;
     iniciarPacman(&pacman, 10, 8);
+    pacman.tiempoInicio = time(NULL);
 
     Fantasma fantasmas[NUM_FANTASMAS];
     iniciarFantasma(&fantasmas[0], BLINKY, 6, 9);
@@ -192,7 +242,7 @@ void jugar() {
         }
 
         turno++;
-        if (turno % VELOCIDAD_FANTASMAS == 0) {
+        if (turno % cfg.velocidadFantasmas == 0) {
             for (int i = 0; i < NUM_FANTASMAS; i++) {
                 moverFantasmaInteligente(&fantasmas[i], &pacman, &grafo);
             }
@@ -227,28 +277,41 @@ void jugar() {
             continue;
         }
 
+        if (contarMonedas() == 0) {
+            int segundos = (int)(time(NULL) - pacman.tiempoInicio);
+            int bonus = (int)(calcularBonusTiempo(segundos) * cfg.multiplicadorBonus);
+            pacman.puntaje += bonus;
+            liberarGrafo(&grafo);
+            mostrarVictoria(pacman.puntaje, segundos, cfg.nombre);
+            return;
+        }
+
+        int segundosTranscurridos = (int)(time(NULL) - pacman.tiempoInicio);
+
         limpiarPantalla();
         printf("╔══════════════════════════════════════╗\n");
         (tiempoAsustado > 0) 
         ? printf("║   ¡FANTASMAS ASUSTADOS! Corre (%02d)   ║\n", tiempoAsustado)
-        : printf("║       PAC-MAN — Moviendo...          ║\n");
+        : printf("║  [%-7s]  PAC-MAN — Moviendo...   ║\n", cfg.nombre);
         printf("╚══════════════════════════════════════╝\n\n");
 
         imprimirMapa(&pacman, fantasmas, NUM_FANTASMAS);
 
-        printf("\nVidas: %d  |  Puntaje: %d\n", pacman.vidas, pacman.puntaje);
+        printf("\nVidas: %d  |  Puntaje: %d  |  Tiempo: %ds  |  Nivel: %s\n",
+                pacman.vidas, pacman.puntaje, segundosTranscurridos, cfg.nombre);
         printf("Controles: [W/A/S/D] para mover | [Q] para salir\n");
 
-        Sleep(500);
+        Sleep(cfg.sleepMs);
     }
 
     system("cls");
     if (pacman.vidas <= 0) {
         printf("\n\n   ¡GAME OVER! Te has quedado sin vidas.\n");
+        printf("   Puntaje Final: %d\n\n", pacman.puntaje);
     } else {
         printf("\n\n   Juego finalizado correctamente.\n");
+        printf("   Puntaje Final: %d\n\n", pacman.puntaje);
     }
-    printf("   Puntaje Final: %d\n\n", pacman.puntaje);
     liberarGrafo(&grafo);
 }
 
@@ -260,12 +323,12 @@ int main() {
         OpcionMenu opcion = mostrarMenu();
 
         switch (opcion) {
-            case OPCION_JUGAR:
-                jugar();
+            case OPCION_JUGAR: {
+                int nivel = mostrarMenuNivel();
+                jugar(nivel);
                 break;
-            case OPCION_PARTIDAS_GUARDADAS:
-                mostrarPartidasGuardadas();
-                break;
+            }
+
             case OPCION_HIGHSCORE:
                 mostrarHighscore();
                 break;

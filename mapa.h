@@ -13,7 +13,6 @@
 
 extern int mapa[FILAS][COLS];
 
-// 3. Prototipos de funciones
 void imprimirMapa(Pacman *pacman, Fantasma fantasmas[], int n);
 int esCamino(int fila, int col);
 

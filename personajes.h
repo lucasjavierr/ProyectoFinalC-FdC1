@@ -1,6 +1,8 @@
 #ifndef PERSONAJES_H
 #define PERSONAJES_H
 
+#include <time.h>
+
 #define SPRITE_PACMAN "C>"
 #define SPRITE_BLINKY "🔴"
 #define SPRITE_PINKY "🩷"
@@ -23,6 +25,7 @@ typedef struct {
     int puntaje;
     Direccion dir;
     char sprite[10];
+    time_t tiempoInicio;
 } Pacman;
 
 typedef enum {
@@ -52,6 +55,5 @@ void asustarFantasma(Fantasma fantasmas[], int n);
 void calmarFantasma(Fantasma fantasmas[], int n);
 
 int colisionPacmanFantasma(Pacman *pacman, Fantasma *fantasma);
-
 
 #endif

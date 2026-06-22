@@ -22,6 +22,8 @@ static void agregarArista(Grafo *g, int desde, int hasta) {
 
 void construirGrafo(Grafo *g) {
     g->totalNodos = MAX_NODOS;
+    g->blinkyFila = 6;
+    g->blinkyCol  = 9;
     for (int i = 0; i < MAX_NODOS; i++)
         g->nodos[i].cabeza = NULL;
 
@@ -44,13 +46,95 @@ void construirGrafo(Grafo *g) {
     }
 }
 
-void moverFantasmaInteligente(Fantasma *fantasma, Pacman *pacman, Grafo *g) {
-    int origen  = celda_a_id(fantasma->fila, fantasma->col);
-    int destino = celda_a_id(pacman->fila, pacman->col);
+static int distancia(int f1, int c1, int f2, int c2) {
+    int df = f1 - f2; if (df < 0) df = -df;
+    int dc = c1 - c2; if (dc < 0) dc = -dc;
+    return df + dc;
+}
 
+static int clampFila(int f) { return f < 0 ? 0 : (f >= FILAS ? FILAS-1 : f); }
+static int clampCol(int c)  { return c < 0 ? 0 : (c >= COLS  ? COLS -1 : c); }
+
+static int celdaObjetivoCercana(int tf, int tc) {
+    tf = clampFila(tf);
+    tc = clampCol(tc);
+    if (mapa[tf][tc] != PARED) return celda_a_id(tf, tc);
+
+    int deltas[4][2] = { {-1,0},{1,0},{0,-1},{0,1} };
+    for (int r = 1; r <= 3; r++) {
+        for (int d = 0; d < 4; d++) {
+            int nf = clampFila(tf + deltas[d][0] * r);
+            int nc = clampCol(tc + deltas[d][1] * r);
+            if (mapa[nf][nc] != PARED) return celda_a_id(nf, nc);
+        }
+    }
+    return celda_a_id(tf, tc);  /* fallback */
+}
+
+void moverFantasmaInteligente(Fantasma *fantasma, Pacman *pacman, Grafo *g) {
     if (fantasma->asustado) {
         moverFantasma(fantasma);
         return;
+    }
+
+    int origen = celda_a_id(fantasma->fila, fantasma->col);
+    int destino;
+
+    switch (fantasma->tipo) {
+        case BLINKY: {
+            destino = celda_a_id(pacman->fila, pacman->col);
+            break;
+        }
+
+        case PINKY: {
+            int tf = pacman->fila;
+            int tc = pacman->col;
+            switch (pacman->dir) {
+                case ARRIBA:    tf -= 4; break;
+                case ABAJO:     tf += 4; break;
+                case IZQUIERDA: tc -= 4; break;
+                case DERECHA:   tc += 4; break;
+                default: break;
+            }
+            destino = celdaObjetivoCercana(tf, tc);
+            break;
+        }
+
+        case INKY: {
+            int refF = pacman->fila;
+            int refC = pacman->col;
+            switch (pacman->dir) {
+                case ARRIBA:    refF -= 2; break;
+                case ABAJO:     refF += 2; break;
+                case IZQUIERDA: refC -= 2; break;
+                case DERECHA:   refC += 2; break;
+                default: break;
+            }
+
+            int tf = refF + (refF - g->blinkyFila);
+            int tc = refC + (refC - g->blinkyCol);
+            destino = celdaObjetivoCercana(tf, tc);
+            break;
+        }
+
+        case CLYDE: {
+            int dist = distancia(fantasma->fila, fantasma->col, pacman->fila, pacman->col);
+            if (dist > 8) {
+                destino = celda_a_id(pacman->fila, pacman->col);
+            } else {
+                destino = celdaObjetivoCercana(FILAS - 1, 0);
+            }
+            break;
+        }
+
+        default:
+            destino = celda_a_id(pacman->fila, pacman->col);
+            break;
+    }
+
+    if (fantasma->tipo == BLINKY) {
+        g->blinkyFila = fantasma->fila;
+        g->blinkyCol  = fantasma->col;
     }
 
     int proximoId = bfsProximoPaso(g, origen, destino);
@@ -58,8 +142,12 @@ void moverFantasmaInteligente(Fantasma *fantasma, Pacman *pacman, Grafo *g) {
         moverFantasma(fantasma);
         return;
     }
-
     id_a_celda(proximoId, &fantasma->fila, &fantasma->col);
+
+    if (fantasma->tipo == BLINKY) {
+        g->blinkyFila = fantasma->fila;
+        g->blinkyCol  = fantasma->col;
+    }
 }
 
 void liberarGrafo(Grafo *g) {
@@ -114,7 +202,6 @@ int bfsProximoPaso(Grafo *g, int origen, int destino) {
 
     if (!encontrado) return -1;
 
-    // Reconstruir camino para encontrar el primer paso
     int paso = destino;
     while (padre[paso] != origen)
         paso = padre[paso];

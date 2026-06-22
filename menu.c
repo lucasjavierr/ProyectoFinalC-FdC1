@@ -5,14 +5,13 @@
 #include <conio.h>
 #include "menu.h"
 
-/* ─── Colores de consola Windows ─────────────────────────────── */
 #define COLOR_RESET      7
-#define COLOR_AMARILLO  14   /* Pac-Man */
-#define COLOR_ROJO       4   /* Blinky  */
-#define COLOR_MAGENTA   13   /* Pinky   */
-#define COLOR_CIAN      11   /* Inky    */
-#define COLOR_NARANJA    6   /* Clyde   */
-#define COLOR_AZUL_OSC   9   /* fantasma asustado */
+#define COLOR_AMARILLO  14
+#define COLOR_ROJO       4
+#define COLOR_MAGENTA   13
+#define COLOR_CIAN      11
+#define COLOR_NARANJA    6
+#define COLOR_AZUL_OSC   9
 #define COLOR_BLANCO    15
 #define COLOR_GRIS       8
 
@@ -32,8 +31,6 @@ static void ocultarCursor() {
     SetConsoleCursorInfo(hConsola, &info);
 }
 
-/* ─── Logo ASCII ─────────────────────────────────────────────── */
-/*  Cada línea del logo tiene su propio color para efecto arcade  */
 static const char *LOGO[] = {
     "  ____   _    ____       __  __    _    _   _ ",
     " |  _ \\ / \\  / ___|     |  \\/  |  / \\  | \\ | |",
@@ -52,7 +49,6 @@ static const int LOGO_COLORES[LOGO_FILAS] = {
     COLOR_AMARILLO,
 };
 
-/* ─── Animación del logo (letra por letra) ───────────────────── */
 static void animarLogo(int xOff, int yOff) {
     for (int f = 0; f < LOGO_FILAS; f++) {
         gotoxy(xOff, yOff + f);
@@ -61,14 +57,12 @@ static void animarLogo(int xOff, int yOff) {
         for (int c = 0; linea[c] != '\0'; c++) {
             putchar(linea[c]);
             fflush(stdout);
-            Sleep(8);   /* velocidad de escritura */
+            Sleep(8);
         }
     }
     setColor(COLOR_RESET);
 }
 
-/* ─── Banda de fantasmas animada ─────────────────────────────── */
-/* Los fantasmas "corren" de izquierda a derecha en loop          */
 typedef struct {
     float x;
     int color;
@@ -77,16 +71,15 @@ typedef struct {
 
 #define N_FANTASMAS_ANIM 4
 #define ANCHO_PANTALLA   60
-#define FILA_FANTASMAS   8   /* fila de consola donde se muestran */
+#define FILA_FANTASMAS   8
 
 static FantasmaAnim banda[N_FANTASMAS_ANIM] = {
-    { 0.0f,  COLOR_ROJO,     "\xDB\xDB" },   /* Blinky  (bloques ASCII)  */
-    { 8.0f,  COLOR_MAGENTA,  "\xDB\xDB" },   /* Pinky                    */
-    {16.0f,  COLOR_CIAN,     "\xDB\xDB" },   /* Inky                     */
-    {24.0f,  COLOR_NARANJA,  "\xDB\xDB" },   /* Clyde                    */
+    { 0.0f,  COLOR_ROJO,     "\xDB\xDB" },
+    { 8.0f,  COLOR_MAGENTA,  "\xDB\xDB" },
+    {16.0f,  COLOR_CIAN,     "\xDB\xDB" },
+    {24.0f,  COLOR_NARANJA,  "\xDB\xDB" },
 };
 
-/* Dibuja un "fantasma" hecho de 2 bloques de color */
 static void dibujarFantasmaAnim(int x, int fila, int color) {
     if (x < 0 || x >= ANCHO_PANTALLA - 1) return;
     gotoxy(x, fila);
@@ -95,17 +88,14 @@ static void dibujarFantasmaAnim(int x, int fila, int color) {
     setColor(COLOR_RESET);
 }
 
-/* Borra la posición anterior */
 static void borrarFantasmaAnim(int x, int fila) {
     if (x < 0 || x >= ANCHO_PANTALLA - 1) return;
     gotoxy(x, fila);
     printf("  ");
 }
 
-/* ─── Etiquetas del menú ─────────────────────────────────────── */
 static const char *OPCIONES_TEXTO[TOTAL_OPCIONES] = {
     "  [ JUGAR ]                 ",
-    "  [ PARTIDAS GUARDADAS ]    ",
     "  [ VER HIGHSCORE ]         ",
     "  [ INSTRUCCIONES ]         ",
     "  [ SALIR ]                 ",
@@ -113,13 +103,12 @@ static const char *OPCIONES_TEXTO[TOTAL_OPCIONES] = {
 
 static const int COLORES_OPCION[TOTAL_OPCIONES] = {
     COLOR_AMARILLO,
-    COLOR_CIAN,
     COLOR_NARANJA,
     COLOR_MAGENTA,
     COLOR_ROJO,
 };
 
-#define FILA_MENU_BASE  11   /* fila de consola donde empieza el menú */
+#define FILA_MENU_BASE  11
 #define COL_MENU        8
 
 static void dibujarMenu(int seleccion) {
@@ -129,7 +118,6 @@ static void dibujarMenu(int seleccion) {
             setColor(COLOR_BLANCO);
             printf(">");
             setColor(COLORES_OPCION[i] | BACKGROUND_INTENSITY);
-            /* resaltar con fondo usando atributo de intensidad */
             SetConsoleTextAttribute(hConsola,
                 COLORES_OPCION[i] | (BACKGROUND_BLUE >> 4));
             printf("%s", OPCIONES_TEXTO[i]);
@@ -156,24 +144,20 @@ static void dibujarSubtitulo(int xOff, int yOff) {
     setColor(COLOR_RESET);
 }
 
-/* ─── Función principal del menú ─────────────────────────────── */
 OpcionMenu mostrarMenu() {
     hConsola = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleOutputCP(437);   /* Página de códigos con bloques ASCII */
+    SetConsoleOutputCP(437);
     system("cls");
     ocultarCursor();
 
-    /* --- 1. Animación inicial del logo --- */
     int xOff = 7, yOff = 1;
     animarLogo(xOff, yOff);
     dibujarSubtitulo(xOff, yOff);
 
-    /* --- 2. Dibujar menú en su estado inicial --- */
     int seleccion = 0;
     dibujarMenu(seleccion);
     dibujarAyudaNavegacion();
 
-    /* --- 3. Inicializar posiciones de fantasmas --- */
     for (int i = 0; i < N_FANTASMAS_ANIM; i++)
         banda[i].x = (float)(i * 10);
 
@@ -181,12 +165,10 @@ OpcionMenu mostrarMenu() {
     for (int i = 0; i < N_FANTASMAS_ANIM; i++)
         posAnt[i] = (int)banda[i].x;
 
-    /* --- 4. Loop principal del menú --- */
     int corriendo = 1;
     int frameCounter = 0;
 
     while (corriendo) {
-        /* Mover y redibujar fantasmas cada ciertos frames */
         if (frameCounter % 2 == 0) {
             for (int i = 0; i < N_FANTASMAS_ANIM; i++) {
                 borrarFantasmaAnim(posAnt[i], FILA_FANTASMAS);
@@ -199,15 +181,13 @@ OpcionMenu mostrarMenu() {
         }
         frameCounter++;
 
-        /* Leer tecla sin bloquear */
         if (_kbhit()) {
             char tecla = _getch();
 
-            /* Soporte para teclas de flecha (devuelven 0 o 224 + código) */
             if (tecla == 0 || tecla == (char)224) {
                 tecla = _getch();
-                if      (tecla == 72) tecla = 'w';   /* flecha arriba  */
-                else if (tecla == 80) tecla = 's';   /* flecha abajo   */
+                if      (tecla == 72) tecla = 'w';
+                else if (tecla == 80) tecla = 's';
             }
 
             switch (tecla) {
@@ -225,10 +205,87 @@ OpcionMenu mostrarMenu() {
             }
         }
 
-        Sleep(50);   /* ~20 fps */
+        Sleep(50);
     }
 
     system("cls");
-    SetConsoleOutputCP(65001);   /* Restaurar UTF-8 para el juego */
+    SetConsoleOutputCP(65001);
     return (OpcionMenu)seleccion;
+}
+
+int mostrarMenuNivel() {
+    system("cls");
+    SetConsoleOutputCP(437);
+    ocultarCursor();
+
+    HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    /* Título */
+    COORD c = { 8, 2 };
+    SetConsoleCursorPosition(h, c);
+    SetConsoleTextAttribute(h, COLOR_AMARILLO);
+    printf("SELECCIONA LA DIFICULTAD");
+    SetConsoleTextAttribute(h, COLOR_RESET);
+
+    static const char *niveles[3] = {
+        "  [ FACIL   ]  - Ritmo tranquilo, ideal para aprender   ",
+        "  [ NORMAL  ]  - Velocidad estandar, el desafio clasico ",
+        "  [ DIFICIL ]  - Todo mas rapido, para los valientes     ",
+    };
+    static const int coloresNivel[3] = {
+        COLOR_CIAN,
+        COLOR_AMARILLO,
+        COLOR_ROJO,
+    };
+
+    int sel = 0;
+    int corriendo = 1;
+
+    while (corriendo) {
+        for (int i = 0; i < 3; i++) {
+            COORD pos = { (SHORT)6, (SHORT)(5 + i * 2) };
+            SetConsoleCursorPosition(h, pos);
+            if (i == sel) {
+                SetConsoleTextAttribute(h, COLOR_BLANCO);
+                printf(">");
+                SetConsoleTextAttribute(h, coloresNivel[i]);
+            } else {
+                SetConsoleTextAttribute(h, COLOR_GRIS);
+                printf(" ");
+            }
+            printf("%s", niveles[i]);
+            SetConsoleTextAttribute(h, COLOR_RESET);
+        }
+
+        COORD ayuda = { 6, 12 };
+        SetConsoleCursorPosition(h, ayuda);
+        SetConsoleTextAttribute(h, COLOR_GRIS);
+        printf("  W / S   para navegar     Enter para confirmar  ");
+        SetConsoleTextAttribute(h, COLOR_RESET);
+
+        if (_kbhit()) {
+            char tecla = _getch();
+            if (tecla == 0 || tecla == (char)224) {
+                tecla = _getch();
+                if      (tecla == 72) tecla = 'w';
+                else if (tecla == 80) tecla = 's';
+            }
+            switch (tecla) {
+                case 'w': case 'W':
+                    sel = (sel - 1 + 3) % 3;
+                    break;
+                case 's': case 'S':
+                    sel = (sel + 1) % 3;
+                    break;
+                case '\r': case '\n':
+                    corriendo = 0;
+                    break;
+            }
+        }
+        Sleep(50);
+    }
+
+    system("cls");
+    SetConsoleOutputCP(65001);
+    return sel + 1;
 }

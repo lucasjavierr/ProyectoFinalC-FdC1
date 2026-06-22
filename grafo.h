@@ -17,6 +17,9 @@ typedef struct {
 typedef struct {
     Nodo nodos[MAX_NODOS];
     int totalNodos;
+    /* Posición de Blinky, necesaria para calcular el objetivo de Inky */
+    int blinkyFila;
+    int blinkyCol;
 } Grafo;
 
 int celda_a_id(int fila, int col);
@@ -29,4 +32,5 @@ int bfsProximoPaso(Grafo *g, int origen, int destino);
 
 #include "personajes.h"
 void moverFantasmaInteligente(Fantasma *fantasma, Pacman *pacman, Grafo *g);
+
 #endif

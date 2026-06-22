@@ -3,7 +3,6 @@
 
 typedef enum {
     OPCION_JUGAR = 0,
-    OPCION_PARTIDAS_GUARDADAS,
     OPCION_HIGHSCORE,
     OPCION_INSTRUCCIONES,
     OPCION_SALIR,
@@ -11,5 +10,6 @@ typedef enum {
 } OpcionMenu;
 
 OpcionMenu mostrarMenu();
+int mostrarMenuNivel();
 
 #endif
