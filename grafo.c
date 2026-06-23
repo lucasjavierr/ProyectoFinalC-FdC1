@@ -68,7 +68,7 @@ static int celdaObjetivoCercana(int tf, int tc) {
             if (mapa[nf][nc] != PARED) return celda_a_id(nf, nc);
         }
     }
-    return celda_a_id(tf, tc);  /* fallback */
+    return celda_a_id(tf, tc);
 }
 
 void moverFantasmaInteligente(Fantasma *fantasma, Pacman *pacman, Grafo *g) {

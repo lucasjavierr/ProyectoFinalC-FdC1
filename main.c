@@ -11,11 +11,6 @@
 #define NUM_FANTASMAS 4
 #define DURACION_ASUSTADO 15
 
-/* Configuración por nivel:
-    Nivel 1 (Fácil)   — Sleep 160ms, fantasmas cada 3 turnos, bonus x1
-    Nivel 2 (Normal)  — Sleep 100ms, fantasmas cada 2 turnos, bonus x1.5
-    Nivel 3 (Difícil) — Sleep  60ms, fantasmas cada 1 turno,  bonus x2 
-*/
 typedef struct {
     int sleepMs;
     int velocidadFantasmas;
@@ -25,7 +20,7 @@ typedef struct {
 
 static const ConfigNivel NIVELES[3] = {
     { 500, 3, 1.0f,  "FACIL"   },
-    { 350, 2, 1.5f,  "NORMAL"  },
+    { 400, 2, 1.5f,  "NORMAL"  },
     { 200, 1, 2.0f,  "DIFICIL" },
 };
 
@@ -111,16 +106,15 @@ void mostrarVictoria(int puntaje, int segundos, const char *nivel) {
     printf("  ║                                      ║\n");
     printf("  ╚══════════════════════════════════════╝\n\n");
 
-    printf("  Ingresa tu nombre (max 20 caracteres): ");
     char nombre[21];
     while (_kbhit()) _getch();
-    fgets(nombre, sizeof(nombre), stdin);
-    nombre[strcspn(nombre, "\n")] = '\0';
-    while (strlen(nombre) == 0) {
-        printf("  El nombre no puede estar vacío. Intenta de nuevo: ");
+    do {
+        printf("  Ingresa tu nombre (max 20 caracteres): ");
         fgets(nombre, sizeof(nombre), stdin);
         nombre[strcspn(nombre, "\n")] = '\0';
-    }
+        if (nombre[0] == '\0')
+            printf("  El nombre no puede estar vacio. Intenta de nuevo.\n");
+    } while (nombre[0] == '\0');
 
     FILE *f = fopen("highscore.txt", "a");
     if (f != NULL) {
@@ -150,6 +144,7 @@ void jugar(int nivel) {
     SetConsoleOutputCP(65001);
     system("cls"); 
     ocultarCursor();
+    reiniciarMapa();
 
     Pacman pacman;
     iniciarPacman(&pacman, 10, 8);
@@ -186,7 +181,23 @@ void jugar(int nivel) {
                 case 's': case 'S': moverPacman(&pacman, ABAJO); break;
                 case 'a': case 'A': moverPacman(&pacman, IZQUIERDA); break;
                 case 'd': case 'D': moverPacman(&pacman, DERECHA); break;
-                case 'q': case 'Q': juegoCorriendo = 0; break; 
+                case 'q': case 'Q': juegoCorriendo = 0; break;
+                case ' ': {
+                    /* ── PAUSA ── */
+                    time_t inicioPausa = time(NULL);
+                    limpiarPantalla();
+                    printf("╔══════════════════════════════════════╗\n");
+                    printf("║           ⏸  PAUSA                   ║\n");
+                    printf("╚══════════════════════════════════════╝\n\n");
+                    imprimirMapa(&pacman, fantasmas, NUM_FANTASMAS);
+                    printf("\n  Presiona ESPACIO para continuar...\n");
+
+                    char t;
+                    do { t = _getch(); } while (t != ' ');
+
+                    pacman.tiempoInicio += (time_t)(time(NULL) - inicioPausa);
+                    break;
+                }
             }
         } else {
             if (pacman.dir != QUIETO) {
@@ -299,7 +310,7 @@ void jugar(int nivel) {
 
         printf("\nVidas: %d  |  Puntaje: %d  |  Tiempo: %ds  |  Nivel: %s\n",
                 pacman.vidas, pacman.puntaje, segundosTranscurridos, cfg.nombre);
-        printf("Controles: [W/A/S/D] para mover | [Q] para salir\n");
+        printf("Controles: [W/A/S/D] para mover | [ESPACIO] pausa | [Q] para salir\n");
 
         Sleep(cfg.sleepMs);
     }

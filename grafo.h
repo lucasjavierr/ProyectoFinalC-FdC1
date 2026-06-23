@@ -17,7 +17,6 @@ typedef struct {
 typedef struct {
     Nodo nodos[MAX_NODOS];
     int totalNodos;
-    /* Posición de Blinky, necesaria para calcular el objetivo de Inky */
     int blinkyFila;
     int blinkyCol;
 } Grafo;

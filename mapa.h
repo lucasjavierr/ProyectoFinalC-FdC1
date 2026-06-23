@@ -13,6 +13,7 @@
 
 extern int mapa[FILAS][COLS];
 
+void reiniciarMapa();
 void imprimirMapa(Pacman *pacman, Fantasma fantasmas[], int n);
 int esCamino(int fila, int col);
 
