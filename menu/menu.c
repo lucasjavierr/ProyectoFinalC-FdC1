@@ -137,9 +137,9 @@ static void dibujarAyudaNavegacion() {
 }
 
 static void dibujarSubtitulo(int xOff, int yOff) {
-    gotoxy(xOff + 1, yOff + LOGO_FILAS + 1);
+    gotoxy(xOff + 7, yOff + LOGO_FILAS + 1);
     setColor(COLOR_GRIS);
-    printf("~ Desarrollado por Lucas Javier. Todos los derechos son reservados. ~\n");
+    printf("~ Desarrollado por Lucas Javier. ~\n");
     setColor(COLOR_RESET);
 }
 

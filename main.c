@@ -147,7 +147,7 @@ void jugar(int nivel) {
     reiniciarMapa();
 
     Pacman pacman;
-    iniciarPacman(&pacman, 10, 8);
+    iniciarPacman(&pacman, 10, 9);
     pacman.tiempoInicio = time(NULL);
 
     Fantasma fantasmas[NUM_FANTASMAS];
@@ -183,7 +183,6 @@ void jugar(int nivel) {
                 case 'd': case 'D': moverPacman(&pacman, DERECHA); break;
                 case 'q': case 'Q': juegoCorriendo = 0; break;
                 case ' ': {
-                    /* ── PAUSA ── */
                     time_t inicioPausa = time(NULL);
                     limpiarPantalla();
                     printf("╔══════════════════════════════════════╗\n");
@@ -244,7 +243,7 @@ void jugar(int nivel) {
         if (colisionDetectada) {
             pacman.vidas--;
             pacman.fila = 10; 
-            pacman.col = 8;
+            pacman.col = 9;
             pacman.dir = QUIETO;
             actualizarSpritePacman(&pacman);
             tiempoAsustado = 0;
@@ -281,7 +280,9 @@ void jugar(int nivel) {
 
         if (colisionDetectada) {
             pacman.vidas--;
-            pacman.fila = 14; pacman.col = 9; pacman.dir = QUIETO;
+            pacman.fila = 10;
+            pacman.col = 9; 
+            pacman.dir = QUIETO;
             actualizarSpritePacman(&pacman);
             tiempoAsustado = 0;
             calmarFantasma(fantasmas, NUM_FANTASMAS);
@@ -315,15 +316,34 @@ void jugar(int nivel) {
         Sleep(cfg.sleepMs);
     }
 
-    system("cls");
-    if (pacman.vidas <= 0) {
-        printf("\n\n   ¡GAME OVER! Te has quedado sin vidas.\n");
-        printf("   Puntaje Final: %d\n\n", pacman.puntaje);
-    } else {
-        printf("\n\n   Juego finalizado correctamente.\n");
-        printf("   Puntaje Final: %d\n\n", pacman.puntaje);
-    }
     liberarGrafo(&grafo);
+    system("cls");
+
+    if (pacman.vidas <= 0) {
+        printf("\n\n");
+        printf("  ╔══════════════════════════════════════╗\n");
+        printf("  ║            GAME OVER                 ║\n");
+        printf("  ╠══════════════════════════════════════╣\n");
+        printf("  ║                                      ║\n");
+        printf("  ║  Te quedaste sin vidas.              ║\n");
+        printf("  ║  Nivel:    %-8s                 ║\n", cfg.nombre);
+        printf("  ║  Puntaje:  %6d pts               ║\n", pacman.puntaje);
+        printf("  ║                                      ║\n");
+        printf("  ╚══════════════════════════════════════╝\n\n");
+    } else {
+        printf("\n\n");
+        printf("  ╔══════════════════════════════════════╗\n");
+        printf("  ║         JUEGO FINALIZADO             ║\n");
+        printf("  ╠══════════════════════════════════════╣\n");
+        printf("  ║                                      ║\n");
+        printf("  ║  Puntaje:  %6d pts               ║\n", pacman.puntaje);
+        printf("  ║                                      ║\n");
+        printf("  ╚══════════════════════════════════════╝\n\n");
+    }
+
+    printf("  Presiona cualquier tecla para volver al menu...\n");
+    while (_kbhit()) _getch();
+    _getch();
 }
 
 int main() {
