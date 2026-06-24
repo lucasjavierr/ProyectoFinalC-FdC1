@@ -118,8 +118,7 @@ static void dibujarMenu(int seleccion) {
             setColor(COLOR_BLANCO);
             printf(">");
             setColor(COLORES_OPCION[i] | BACKGROUND_INTENSITY);
-            SetConsoleTextAttribute(hConsola,
-                COLORES_OPCION[i] | (BACKGROUND_BLUE >> 4));
+            SetConsoleTextAttribute(hConsola, COLORES_OPCION[i] | (BACKGROUND_BLUE >> 4));
             printf("%s", OPCIONES_TEXTO[i]);
         } else {
             setColor(COLOR_GRIS);
@@ -138,7 +137,7 @@ static void dibujarAyudaNavegacion() {
 }
 
 static void dibujarSubtitulo(int xOff, int yOff) {
-    gotoxy(xOff + 8, yOff + LOGO_FILAS + 1);
+    gotoxy(xOff + 1, yOff + LOGO_FILAS + 1);
     setColor(COLOR_GRIS);
     printf("~ Desarrollado por Lucas Javier. Todos los derechos son reservados. ~\n");
     setColor(COLOR_RESET);
