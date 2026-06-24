@@ -1,7 +1,7 @@
 #ifndef MAPA_H
 #define MAPA_H
 
-#include "personajes.h"
+#include "../personajes/personajes.h"
 
 #define FILAS 19
 #define COLS 19

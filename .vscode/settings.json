@@ -1,8 +1,8 @@
 {
     "code-runner.executorMap": {
-        "c": "cd $dir && (for /f \"delims=\" %i in ('dir /b *.c') do @echo %i) > files.txt && g++ @files.txt -o $fileNameWithoutExt.exe -Wall -lwinmm && del files.txt && start cmd /k \"$fileNameWithoutExt.exe && echo. && echo Program finished. && echo Presione una tecla para finalizar la visualizacion. && pause >nul && exit\"",
-        "cpp": "cd $dir && (for /f \"delims=\" %i in ('dir /b *.cpp') do @echo %i) > files.txt && g++ @files.txt -o $fileNameWithoutExt.exe -Wall -lwinmm && del files.txt && start cmd /k \"$fileNameWithoutExt.exe && echo. && echo Program finished. && echo Presione una tecla para finalizar la visualizacion. && pause >nul && exit\""
-    },
+    "c": "cd $dir && g++ main.c estructuras/cola.c estructuras/grafo.c mapa/mapa.c menu/menu.c personajes/personajes.c -o main.exe -Wall -lwinmm && start cmd /k \"main.exe && echo. && echo Program finished. && echo Presione una tecla para finalizar la visualizacion. && pause >nul && exit\"",
+    "cpp": "cd $dir && (for /f \"delims=\" %i in ('dir /b /s *.cpp') do @echo %i) > files.txt && g++ @files.txt -o $fileNameWithoutExt.exe -Wall -lwinmm && del files.txt && start cmd /k \"$fileNameWithoutExt.exe && echo. && echo Program finished. && echo Presione una tecla para finalizar la visualizacion. && pause >nul && exit\""
+},
     "code-runner.runInTerminal": true,
     "code-runner.saveFileBeforeRun": true,
     "code-runner.clearPreviousOutput": true,

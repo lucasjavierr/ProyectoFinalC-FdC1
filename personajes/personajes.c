@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "personajes.h"
-#include "mapa.h"
-#include "grafo.h"
+#include "../mapa/mapa.h"
+#include "../estructuras/grafo.h"
 
 void iniciarPacman(Pacman *pacman, int fila, int col) {
     pacman->fila = fila;

@@ -3,10 +3,10 @@
 #include <windows.h>
 #include <conio.h> 
 #include <time.h>
-#include "mapa.h"
-#include "grafo.h"
-#include "personajes.h"
-#include "menu.h"
+#include "mapa/mapa.h"
+#include "estructuras/grafo.h"
+#include "personajes/personajes.h"
+#include "menu/menu.h"
 
 #define NUM_FANTASMAS 4
 #define DURACION_ASUSTADO 15

@@ -108,8 +108,8 @@ static const int COLORES_OPCION[TOTAL_OPCIONES] = {
     COLOR_ROJO,
 };
 
-#define FILA_MENU_BASE  11
-#define COL_MENU        8
+#define FILA_MENU_BASE 11
+#define COL_MENU 8
 
 static void dibujarMenu(int seleccion) {
     for (int i = 0; i < TOTAL_OPCIONES; i++) {
@@ -220,7 +220,6 @@ int mostrarMenuNivel() {
 
     HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
 
-    /* Título */
     COORD c = { 8, 2 };
     SetConsoleCursorPosition(h, c);
     SetConsoleTextAttribute(h, COLOR_AMARILLO);
@@ -267,7 +266,7 @@ int mostrarMenuNivel() {
             char tecla = _getch();
             if (tecla == 0 || tecla == (char)224) {
                 tecla = _getch();
-                if      (tecla == 72) tecla = 'w';
+                if (tecla == 72) tecla = 'w';
                 else if (tecla == 80) tecla = 's';
             }
             switch (tecla) {

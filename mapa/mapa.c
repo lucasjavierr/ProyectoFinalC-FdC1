@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "mapa.h"
-#include "personajes.h"
+#include "../personajes/personajes.h"
 
 static const int mapaOriginal[FILAS][COLS] = {
     {0, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2, 0},

@@ -1,7 +1,7 @@
 #ifndef GRAFO_H
 #define GRAFO_H
 
-#include "mapa.h"
+#include "../mapa/mapa.h"
 
 #define MAX_NODOS (FILAS * COLS)
 
@@ -29,7 +29,7 @@ void liberarGrafo(Grafo *g);
 
 int bfsProximoPaso(Grafo *g, int origen, int destino);
 
-#include "personajes.h"
+#include "../personajes/personajes.h"
 void moverFantasmaInteligente(Fantasma *fantasma, Pacman *pacman, Grafo *g);
 
 #endif

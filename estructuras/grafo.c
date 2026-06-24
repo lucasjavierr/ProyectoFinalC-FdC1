@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "grafo.h"
-#include "mapa.h"
+#include "../mapa/mapa.h"
 #include "cola.h"
 
 int celda_a_id(int fila, int col) {
