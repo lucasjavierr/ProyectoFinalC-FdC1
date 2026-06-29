@@ -20,8 +20,8 @@ typedef struct {
 
 static const ConfigNivel NIVELES[3] = {
     { 500, 3, 1.0f,  "FACIL"   },
-    { 400, 2, 1.5f,  "NORMAL"  },
-    { 200, 1, 2.0f,  "DIFICIL" },
+    { 450, 2, 1.5f,  "NORMAL"  },
+    { 350, 1, 2.0f,  "DIFICIL" },
 };
 
 void limpiarPantalla() {
